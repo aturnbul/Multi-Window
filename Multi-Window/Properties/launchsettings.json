@@ -1,0 +1,10 @@
+﻿{
+    "profiles": {
+      "Multi-Window (Unpackaged)": {
+        "commandName": "Project"
+      },
+      "Multi-Window (Package)": {
+        "commandName": "MsixPackage"
+      }
+    }
+}

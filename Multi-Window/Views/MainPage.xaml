@@ -1,0 +1,13 @@
+﻿<Page
+    x:Class="Multi_Window.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea">
+        <ToggleSwitch x:Name="StatusWindowToggle" x:FieldModifier="public" Grid.Row="2" Grid.Column="1" Header="Show Status Window"
+                          Toggled="StatusWindow_Toggled" IsOn="{x:Bind ShellPage.SettingsStatusWindow, Mode=OneTime}" />
+    </Grid>
+</Page>
