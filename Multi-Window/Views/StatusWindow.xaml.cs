@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 
@@ -39,6 +40,13 @@ public sealed partial class StatusWindow : Window
                     _traceMessages.Add(trace);
 
         // register for Trace messages and, when they arrive, add them to list
-        WeakReferenceMessenger.Default.Register<TraceMessage>(this, (r, m) => _traceMessages.Add(m.Value));
+        WeakReferenceMessenger.Default.Register<TraceMessage>(this, (r, m) =>
+        {
+            // This will verify that the message handler is not on the UI thread (it's on sender's thread)
+            Debug.WriteLine($"StatusWindow Message received from thread {Environment.CurrentManagedThreadId}");
+
+            // The _traceMessages collection is created on the UI thread, so we have to marshal updates to the UI thread
+            App.UIDispatcherQueue.TryEnqueue( () => _traceMessages.Add(m.Value) );
+        });
     }
 }

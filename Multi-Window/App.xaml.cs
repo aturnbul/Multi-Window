@@ -14,6 +14,7 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using CommunityToolkit.Mvvm.Messaging.Messages;
 using System.Diagnostics;
+using Microsoft.UI.Dispatching;
 
 namespace Multi_Window;
 
@@ -41,6 +42,10 @@ public partial class App : Application
     public static WindowEx MainWindow { get; } = new MainWindow();
     public static ShellPage? ShellPage  { get; set; }
     private static readonly List<string> _traceMessages = new();
+
+    // Provide easy access to the UI thread
+    public static DispatcherQueue UIDispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
 
     private Task? messageGenerator;
 
