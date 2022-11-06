@@ -45,6 +45,11 @@ public sealed partial class StatusWindow : Window
             // This will verify that the message handler is not on the UI thread (it's on sender's thread)
             Debug.WriteLine($"StatusWindow Message received from thread {Environment.CurrentManagedThreadId}");
 
+            // The original code used the following to update _traceMessages:
+            //_traceMessages.Add(m.Value);
+            // This will fail because _traceMessages was created on the UI thread but the handler is using
+            // the message sender's thread.
+
             // The _traceMessages collection is created on the UI thread, so we have to marshal updates to the UI thread
             App.UIDispatcherQueue.TryEnqueue( () => _traceMessages.Add(m.Value) );
         });
