@@ -29,4 +29,15 @@ public sealed partial class MainPage : Page
         else if (StatusWindowToggle.IsOn == false && ShellPage.SettingsStatusWindow == true)
             WeakReferenceMessenger.Default.Send(new CloseWindowMessage(true));
     }
+
+    private async void Button_Click(object sender, RoutedEventArgs e)
+    {
+        WeakReferenceMessenger.Default.Send(new ShutDownMessage());                                     // close all windows
+        if (App.Current is App app && app.messageGenerator is not null)
+        {
+            await app.messageGenerator;                                                                 // wait for closure
+            app.messageGenerator = null;
+        }
+        App.MainWindow.Close();
+    }
 }

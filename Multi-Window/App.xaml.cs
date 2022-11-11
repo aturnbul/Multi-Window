@@ -47,7 +47,7 @@ public partial class App : Application
     public static DispatcherQueue UIDispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
 
-    private Task? messageGenerator;
+    public Task? messageGenerator;
 
     public App()
     {
@@ -90,7 +90,7 @@ public partial class App : Application
         Microsoft.UI.Xaml.Application.Current.UnhandledException += Current_UnhandledException;
     }
 
-    private void RandomMessageGenerator()
+    private async Task RandomMessageGenerator()
     {
         var shutdown = false;
         WeakReferenceMessenger.Default.Register<ShutDownMessage>(this, (r, m) => shutdown = true);
@@ -99,11 +99,10 @@ public partial class App : Application
         Random rnd = new();
         while (shutdown == false)
         {
-            Thread.Sleep(rnd.Next(5000));
-            var tm = new TraceMessage($"{DateTime.Now:hh:mm:ss.ffff} Timer event. (Th: {Environment.CurrentManagedThreadId})");
+            await Task.Delay(rnd.Next(2000));
             try
             {
-                WeakReferenceMessenger.Default.Send(tm);
+                WeakReferenceMessenger.Default.Send(new TraceMessage($"{DateTime.Now:hh:mm:ss.ffff} Timer event. (Th: {Environment.CurrentManagedThreadId})"));
             }
             catch (Exception e) 
             {
@@ -154,12 +153,19 @@ public partial class App : Application
 
     private async void OnAppWindowClosing(object sender, AppWindowClosingEventArgs e)
     {
-        WeakReferenceMessenger.Default.UnregisterAll(this);                                             // stop messages and avoid memory leaks
-        WeakReferenceMessenger.Default.Send(new ShutDownMessage(true));                                 // close all windows
-
-        MainWindow.AppWindow.Closing -= OnAppWindowClosing;
-
-        if (messageGenerator is not null) await messageGenerator;
+        WeakReferenceMessenger.Default.Send(new ShutDownMessage());                                     // close all windows
+        if (messageGenerator is not null)
+        {
+            e.Cancel = true;
+            await messageGenerator;                                                                     // wait for closure
+            messageGenerator = null;
+            MainWindow.Close();
+        }
+        else
+        {
+            WeakReferenceMessenger.Default.UnregisterAll(this);                                         // stop messages and avoid memory leaks
+            MainWindow.AppWindow.Closing -= OnAppWindowClosing;
+        }
     }
 }
 
@@ -192,9 +198,8 @@ public class WindowClosedMessage : ValueChangedMessage<bool>
     public WindowClosedMessage(bool value) : base(value) { }
 }
 
-public class ShutDownMessage : ValueChangedMessage<bool>
+public class ShutDownMessage
 {
-    public ShutDownMessage(bool value) : base(value) { }
 }
 
 public class TraceMessage : ValueChangedMessage<string>

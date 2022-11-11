@@ -7,7 +7,10 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-        <ToggleSwitch x:Name="StatusWindowToggle" x:FieldModifier="public" Grid.Row="2" Grid.Column="1" Header="Show Status Window"
-                          Toggled="StatusWindow_Toggled" IsOn="{x:Bind ShellPage.SettingsStatusWindow, Mode=OneTime}" />
+        <StackPanel Orientation="Vertical">
+            <ToggleSwitch x:Name="StatusWindowToggle" x:FieldModifier="public" Grid.Row="2" Grid.Column="1" Header="Show Status Window"
+                              Toggled="StatusWindow_Toggled" IsOn="{x:Bind ShellPage.SettingsStatusWindow, Mode=OneTime}" />
+            <Button Content="Shutdown" Click="Button_Click"/>
+        </StackPanel>
     </Grid>
 </Page>
